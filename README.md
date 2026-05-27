@@ -82,7 +82,7 @@ O principal objetivo deste projeto foi consolidar conhecimentos em:
 
 ---
 
-## Arquitetura do projeto
+### Arquitetura do projeto
 
 ```text
 src/main/java/com/redesocial/social
