@@ -18,62 +18,44 @@ O projeto foi construído utilizando **Java + Spring Boot** no back-end, **MySQL
 
 ## Objetivo
 
-O principal objetivo deste projeto foi consolidar conhecimentos em:
+O principal objetivo deste projeto é consolidar conhecimentos em:
 
 - desenvolvimento de APIs REST
 - modelagem de banco de dados relacional
-- relacionamentos entre entidades com JPA/Hibernate
+- Spring Boot
+- Spring Data JPA
+- Spring Security
+- criptografia de senhas com BCrypt
+- arquitetura em camadas
 - integração entre front-end e back-end
-- manipulação de requisições HTTP
-- versionamento de código com Git/GitHub
+- versionamento com Git e GitHub
 
 ---
 
-## Funcionalidades
+# Tecnologias utilizadas
 
-### Gestão de usuários
-- Cadastro de usuários
-- Listagem de usuários
+## Back-end
 
-### Postagens
-- Criação de postagens
-- Exibição de postagens em feed
-
-### Comentários
-- Comentários em postagens
-- Listagem de comentários
-
-### Curtidas
-- Curtir postagens
-- Registro de curtidas por usuário
-
-### Interface Web
-- Cadastro via navegador
-- Publicação de postagens
-- Visualização dinâmica do feed
-- Botão de curtir integrado à API
-
----
-
-## Tecnologias utilizadas
-
-### Back-end
 - Java 21
 - Spring Boot
 - Spring Data JPA
+- Spring Security
 - Hibernate
 - Maven
 
-### Banco de dados
+## Banco de Dados
+
 - MySQL
 
-### Front-end
+## Front-end
+
 - HTML5
 - CSS3
 - JavaScript
 - Bootstrap 5
 
-### Ferramentas
+## Ferramentas
+
 - VS Code
 - Git
 - GitHub
@@ -82,15 +64,59 @@ O principal objetivo deste projeto foi consolidar conhecimentos em:
 
 ---
 
-### Arquitetura do projeto
+# Funcionalidades Implementadas
+
+## Usuários
+
+- Cadastro de usuários
+- Listagem de usuários
+- Senhas criptografadas com BCrypt
+
+## Autenticação
+
+- Login por e-mail e senha
+- Validação de credenciais
+- Resposta estruturada utilizando DTOs
+
+## Postagens
+
+- Criação de postagens
+- Listagem de postagens
+
+## Comentários
+
+- Criação de comentários
+- Listagem de comentários
+
+## Curtidas
+
+- Registro de curtidas
+- Listagem de curtidas
+
+---
+
+# Arquitetura Atual do Projeto
 
 ```text
 src/main/java/com/redesocial/social
+│
+├── config
+│   └── SecurityConfig.java
+│
 ├── controller
+│   ├── AuthController.java
 │   ├── UsuarioController.java
 │   ├── PostagemController.java
 │   ├── ComentarioController.java
 │   └── CurtidaController.java
+│
+├── dto
+│   ├── LoginRequest.java
+│   └── LoginResponse.java
+│
+├── service
+│   ├── AuthService.java
+│   └── UsuarioService.java
 │
 ├── model
 │   ├── Usuario.java
@@ -105,92 +131,171 @@ src/main/java/com/redesocial/social
 │   └── CurtidaRepository.java
 │
 └── SocialApplication.java
-
-
-src/main/resources
-├── static
-│   ├── index.html
-│   ├── style.css
-│   └── app.js
-│
-└── application.properties
 ```
 
 ---
 
-## Modelagem de relacionamentos
+# Arquitetura em Camadas
 
-Este projeto utiliza relacionamentos entre entidades com **JPA/Hibernate**.
-
-### Usuário e Postagens
+O projeto está sendo organizado utilizando o padrão:
 
 ```text
-Usuario 1 ---- N Postagem
+Controller
+↓
+Service
+↓
+Repository
+↓
+Banco de Dados
 ```
 
-### Usuário e Comentários
+### Controller
 
-```text
-Usuario 1 ---- N Comentario
+Responsável por receber requisições HTTP.
+
+Exemplo:
+
+```java
+POST /usuarios
+POST /auth/login
 ```
 
-### Postagem e Comentários
+### Service
 
-```text
-Postagem 1 ---- N Comentario
+Responsável pelas regras de negócio.
+
+Exemplos:
+
+- criptografar senhas
+- validar login
+- processar informações antes de salvar
+
+### Repository
+
+Responsável pela comunicação com o banco de dados utilizando Spring Data JPA.
+
+---
+
+# Segurança
+
+O projeto utiliza Spring Security para criptografia de senhas.
+
+### BCrypt
+
+As senhas dos usuários são armazenadas de forma segura utilizando:
+
+```java
+BCryptPasswordEncoder
 ```
 
-### Usuário e Curtidas
+Exemplo:
 
 ```text
-Usuario 1 ---- N Curtida
+Senha original:
+123456
+
+Senha armazenada:
+$2a$10$...
 ```
 
-### Postagem e Curtidas
+Dessa forma nenhuma senha é salva em texto puro no banco de dados.
 
-```text
-Postagem 1 ---- N Curtida
+---
+
+# Endpoints da API
+
+## Usuários
+
+### Criar usuário
+
+```http
+POST /usuarios
+```
+
+Exemplo:
+
+```json
+{
+  "nome": "Gustavo",
+  "email": "gustavo@email.com",
+  "senha": "123456"
+}
 ```
 
 ---
 
-## Como executar o projeto
+### Listar usuários
 
-### 1. Clonar o repositório
-
-```bash
-git clone URL_DO_SEU_REPOSITORIO
+```http
+GET /usuarios
 ```
 
 ---
 
-### 2. Entrar na pasta do projeto
+## Autenticação
 
-```bash
-cd rede-social-java
+### Login
+
+```http
+POST /auth/login
+```
+
+Exemplo:
+
+```json
+{
+  "email": "gustavo@email.com",
+  "senha": "123456"
+}
+```
+
+Resposta:
+
+```json
+{
+  "mensagem": "Login realizado com sucesso",
+  "email": "gustavo@email.com"
+}
 ```
 
 ---
 
-### 3. Criar o banco de dados MySQL
+## Postagens
 
-Execute no MySQL:
+```http
+GET  /postagens
+POST /postagens
+```
+
+---
+
+## Comentários
+
+```http
+GET  /comentarios
+POST /comentarios
+```
+
+---
+
+## Curtidas
+
+```http
+GET  /curtidas
+POST /curtidas
+```
+
+---
+
+# Banco de Dados
+
+Criar o banco:
 
 ```sql
 CREATE DATABASE social_db;
 ```
 
----
-
-### 4. Configurar o arquivo `application.properties`
-
-Editar:
-
-```properties
-src/main/resources/application.properties
-```
-
-Exemplo:
+Configurar o arquivo:
 
 ```properties
 spring.datasource.url=jdbc:mysql://localhost:3306/social_db
@@ -203,15 +308,27 @@ spring.jpa.show-sql=true
 
 ---
 
-### 5. Executar a aplicação
+# Executando o Projeto
+
+## Clonar o repositório
+
+```bash
+git clone https://github.com/ogustavonicolau/rede-social-java.git
+```
+
+## Entrar na pasta
+
+```bash
+cd rede-social-java
+```
+
+## Executar aplicação
 
 ```bash
 ./mvnw spring-boot:run
 ```
 
----
-
-### 6. Acessar no navegador
+## Acessar
 
 ```text
 http://localhost:8080
@@ -219,133 +336,43 @@ http://localhost:8080
 
 ---
 
-## Endpoints da API
+# Aprendizados
 
-### Usuários
+Durante o desenvolvimento deste projeto foram praticados conceitos como:
 
-```text
-GET  /usuarios
-POST /usuarios
-```
-
----
-
-### Postagens
-
-```text
-GET  /postagens
-POST /postagens
-```
+- APIs REST
+- Spring Boot
+- Spring Security
+- BCrypt
+- JPA/Hibernate
+- DTOs
+- Arquitetura em camadas
+- MySQL
+- Integração Front-end e Back-end
+- Git e GitHub
 
 ---
 
-### Comentários
+# Próximas Melhorias
 
-```text
-GET  /comentarios
-POST /comentarios
-```
+Planejadas para as próximas versões:
 
----
-
-### Curtidas
-
-```text
-GET  /curtidas
-POST /curtidas
-```
-
----
-
-## Exemplos de requisições JSON
-
-### Criar usuário
-
-```json
-{
-  "nome": "Gustavo",
-  "email": "gustavo@email.com",
-  "senha": "123456"
-}
-```
+- JWT Authentication
+- Proteção de rotas
+- UsuarioResponse DTO
+- PostagemService
+- ComentarioService
+- CurtidaService
+- Edição de postagens
+- Exclusão de postagens
+- Upload de foto de perfil
+- Feed mais moderno
+- Deploy na nuvem
 
 ---
 
-### Criar postagem
-
-```json
-{
-  "texto": "Minha primeira postagem!",
-  "usuario": {
-    "id": 1
-  }
-}
-```
-
----
-
-### Criar comentário
-
-```json
-{
-  "texto": "Muito boa essa postagem!",
-  "usuario": {
-    "id": 1
-  },
-  "postagem": {
-    "id": 1
-  }
-}
-```
-
----
-
-### Curtir postagem
-
-```json
-{
-  "usuario": {
-    "id": 1
-  },
-  "postagem": {
-    "id": 1
-  }
-}
-```
-
----
-
-## Aprendizados com este projeto
-
-Durante o desenvolvimento deste projeto, pratiquei:
-
-- construção de APIs REST com Spring Boot
-- persistência de dados com JPA/Hibernate
-- criação de relacionamentos entre entidades
-- integração entre front-end e back-end
-- testes de endpoints com Postman
-- versionamento com Git e GitHub
-- organização de projeto Full Stack
-
----
-
-## Melhorias futuras
-
-Próximas evoluções planejadas:
-
-- autenticação e login com Spring Security
-- criptografia de senha com BCrypt
-- edição e exclusão de postagens
-- contador de curtidas em tempo real
-- exibição de comentários no feed
-- upload de foto de perfil
-- melhoria visual da interface
-- deploy em nuvem
-
----
-
-## Autor
+# Autor
 
 **Gustavo de Oliveira Nicolau**
 
-Projeto desenvolvido como parte do meu portfólio de desenvolvimento, com foco em prática e evolução nas tecnologias Java, Spring Boot e desenvolvimento Full Stack.
+Projeto desenvolvido para fins de estudo, prática e composição de portfólio profissional em desenvolvimento Full Stack utilizando Java e Spring Boot.
